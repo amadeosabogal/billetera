@@ -1,15 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "rewrites": [
+  "redirects": [
     {
       "source": "/assets/",
-      "destination": "/index.html"
+      "destination": "/",
+      "permanent": false
     },
     {
       "source": "/assets",
-      "destination": "/index.html"
-    },
+      "destination": "/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/((?!assets/.+|icons/.*|manifest\\.json|sw\\.js).*)",
       "destination": "/index.html"
