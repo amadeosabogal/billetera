@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Billetera Voz - Finanzas Inteligentes</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="description" content="Registra tus ingresos y egresos bancarios con voz e Inteligencia Artificial">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="BilleteraVoz">
+  
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/jpeg" href="./icons/icon.jpg">
+  <link rel="apple-touch-icon" href="./icons/icon.jpg">
+
+  <!-- Google Font: Archivo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="./css/variables.css">
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/components.css">
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toast-notice" class="toast-notice">Mensaje informativo</div>
+
+  <!-- Mobile Viewport Container -->
+  <div class="app-viewport">
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="user-profile">
+        <div class="avatar-badge">
+          <span>BV</span>
+        </div>
+        <div class="greeting-text">
+          <h1>Billetera Voz</h1>
+          <p>
+            <span id="connection-status-dot" class="status-dot"></span>
+            <span id="connection-status-label">En línea</span>
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="toggle-balance-visibility" class="icon-btn" title="Ocultar o mostrar saldo" aria-label="Ocultar o mostrar saldo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ==========================================
+           TAB 1: INICIO (DASHBOARD)
+      =========================================== -->
+      <section id="tab-home" class="tab-view active">
+        
+        <!-- PWA Install Banner (dynamic if available) -->
+        <div id="pwa-install-banner" class="pwa-install-banner" style="display: none; margin-bottom: 16px;">
+          <div>
+            <div style="font-weight: 600; font-size: 13px; color: var(--text-main);">Instalar en tu Celular</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Accede al instante desde tu pantalla de inicio como app nativa.</div>
+          </div>
+          <button id="pwa-install-trigger" class="install-btn">Instalar</button>
+        </div>
+
+        <!-- Hero Balance Card -->
+        <div class="balance-card">
+          <div class="balance-card-header">
+            <span class="balance-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+              Saldo Total Disponible
+            </span>
+            <span class="badge-tag">Actualizado</span>
+          </div>
+          <div class="balance-amount-row">
+            <span class="balance-currency">S/</span>
+            <span id="total-balance-value" class="balance-value">0.00</span>
+          </div>
+          <div class="balance-stats-row">
+            <div class="mini-stat income">
+              <div class="mini-stat-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <line x1="12" y1="19" x2="12" y2="5"></line>
+                  <polyline points="5 12 12 5 19 12"></polyline>
+                </svg>
+              </div>
+              <div class="mini-stat-info">
+                <span class="mini-stat-title">Ingresos mes</span>
+                <span id="monthly-income-val" class="mini-stat-value">+ S/ 0.00</span>
+              </div>
+            </div>
+            <div class="mini-stat expense">
+              <div class="mini-stat-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+              </div>
+              <div class="mini-stat-info">
+                <span class="mini-stat-title">Gastos mes</span>
+                <span id="monthly-expense-val" class="mini-stat-value">- S/ 0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debts & Loans Quick Summary Widget -->
+        <div class="debts-widget-card" onclick="document.querySelector('[data-tab=debts]').click()">
+          <div class="debts-widget-item">
+            <span class="debts-widget-label">Te deben</span>
+            <span id="widget-to-collect" class="debts-widget-val income">S/ 0.00</span>
+          </div>
+          <div class="debts-widget-divider"></div>
+          <div class="debts-widget-item">
+            <span class="debts-widget-label">Debes pagar</span>
+            <span id="widget-to-pay" class="debts-widget-val expense">S/ 0.00</span>
+          </div>
+          <div class="debts-widget-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Voice Hero Action Banner -->
+        <div id="voice-hero-banner" class="voice-hero-banner" style="margin-top: 14px;">
+          <div class="voice-hero-content">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              </svg>
+              Registro por voz
+            </h3>
+            <p>Toca para dictar: <i>"Gasté 20 soles en taxi con Yape"</i></p>
+          </div>
+          <div class="voice-hero-icon-minimal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Bank Accounts Carousel -->
+        <div style="margin-top: 20px;">
+          <div class="section-header">
+            <h2 class="section-title">Cuentas y Billeteras</h2>
+            <button class="section-action" onclick="document.querySelector('[data-tab=accounts]').click()">
+              Ver todas
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div id="accounts-carousel" class="accounts-carousel no-scrollbar">
+            <!-- Dynamic Account Cards -->
+          </div>
+        </div>
+
+        <!-- Quick Actions Row -->
+        <div style="margin-top: 16px;">
+          <div class="quick-actions-row">
+            <button id="quick-add-expense" class="quick-action-btn red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Gasto
+            </button>
+            <button id="quick-add-income" class="quick-action-btn green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Ingreso
+            </button>
+            <button id="quick-transfer" class="quick-action-btn neutral">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 1 21 5 17 9"></polyline>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                <polyline points="7 23 3 19 7 15"></polyline>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+              </svg>
+              Transferir
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div style="margin-top: 22px;">
+          <div class="section-header">
+            <h2 class="section-title">Movimientos Recientes</h2>
+            <button class="section-action" onclick="document.querySelector('[data-tab=history]').click()">
+              Historial
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div id="recent-tx-list" class="tx-list">
+            <!-- Dynamic Recent Items -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==========================================
+           TAB 2: CUENTAS
+      =========================================== -->
+      <section id="tab-accounts" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title">Cuentas Bancarias</h2>
+          <button id="open-add-account-btn" class="section-action">+ Nueva Cuenta</button>
+        </div>
+        <p class="tx-meta" style="margin-bottom: 16px;">
+          Interbank es tu cuenta principal. Cualquier movimiento se cargará aquí por defecto.
+        </p>
+        <div id="all-accounts-list" class="tx-list">
+          <!-- Dynamic Accounts List -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB: DEUDAS Y PRÉSTAMOS
+      =========================================== -->
+      <section id="tab-debts" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title">Deudas y Préstamos</h2>
+          <button id="add-manual-debt-btn" class="section-action">+ Nueva Deuda</button>
+        </div>
+
+        <!-- Debts Summary Cards -->
+        <div class="debts-summary-cards">
+          <div class="debt-stat-card to-collect">
+            <span class="debt-stat-label">Te deben</span>
+            <span id="debts-total-collect" class="debt-stat-val">S/ 0.00</span>
+          </div>
+          <div class="debt-stat-card to-pay">
+            <span class="debt-stat-label">Debes pagar</span>
+            <span id="debts-total-pay" class="debt-stat-val">S/ 0.00</span>
+          </div>
+        </div>
+
+        <!-- Filter Pills -->
+        <div style="display: flex; gap: 6px; margin: 16px 0 12px 0; overflow-x: auto;" class="no-scrollbar">
+          <button class="badge-tag debt-filter-btn active" data-filter="todos">Todos</button>
+          <button class="badge-tag debt-filter-btn" data-filter="me_deben">Me deben</button>
+          <button class="badge-tag debt-filter-btn" data-filter="debo">Debo</button>
+          <button class="badge-tag debt-filter-btn" data-filter="pagado">Pagados</button>
+        </div>
+
+        <div id="all-debts-list" class="tx-list">
+          <!-- Dynamic Debts List -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 3: HISTORIAL
+      =========================================== -->
+      <section id="tab-history" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title">Historial</h2>
+        </div>
+
+        <!-- Filter Pills -->
+        <div style="display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto;" class="no-scrollbar">
+          <button class="badge-tag history-filter-btn active" data-filter="todos">Todos</button>
+          <button class="badge-tag history-filter-btn" data-filter="egreso">Gastos</button>
+          <button class="badge-tag history-filter-btn" data-filter="ingreso">Ingresos</button>
+          <button class="badge-tag history-filter-btn" data-filter="transferencia">Transferencias</button>
+        </div>
+
+        <div id="full-history-list" class="tx-list">
+          <!-- Dynamic Full History -->
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 4: ESTADÍSTICAS
+      =========================================== -->
+      <section id="tab-stats" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title">Resumen Mensual</h2>
+        </div>
+
+        <!-- Net Balance Card -->
+        <div class="balance-card" style="margin-bottom: 16px;">
+          <div class="balance-label">Balance Neto</div>
+          <div class="balance-amount-row" style="margin-bottom: 4px;">
+            <span id="stats-net-balance" class="balance-value" style="font-size: 28px;">S/ 0.00</span>
+          </div>
+          <div class="tx-meta">
+            Ingresos: <span id="stats-income-total" style="color: var(--income-green); font-weight: 600; margin-right: 8px;">S/ 0.00</span>
+            Gastos: <span id="stats-expense-total" style="color: var(--expense-red); font-weight: 600;">S/ 0.00</span>
+          </div>
+        </div>
+
+        <!-- Categories Breakdown -->
+        <div class="settings-group">
+          <span class="settings-group-title">Gastos por Categoría</span>
+          <div id="stats-categories-list" style="margin-top: 10px;">
+            <!-- Category Progress Bars -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 5: AJUSTES
+      =========================================== -->
+      <section id="tab-settings" class="tab-view">
+        <div class="section-header">
+          <h2 class="section-title">Ajustes</h2>
+        </div>
+
+        <!-- Supabase Cloud Sync (Direct Anon Key) -->
+        <div class="settings-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="settings-group-title">Base de Datos Supabase</span>
+            <span id="supabase-status-badge" class="badge-tag success">Conectado</span>
+          </div>
+          <p id="supabase-status-desc" style="font-size: 13px; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
+            Conexión directa activa con tu base de datos mediante Anon Key. Tus cuentas, movimientos y deudas se respaldan y sincronizan en tiempo real sin necesidad de correos ni contraseñas.
+          </p>
+
+          <div style="background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Servidor Cloud</span>
+              <span style="font-size: 11px; color: var(--income-green); font-weight: 500;">En línea</span>
+            </div>
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-main); margin-top: 3px; word-break: break-all;">
+              hypuboxghqukxphgwgqb.supabase.co
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+              Cuenta principal: <strong>Interbank</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button id="supabase-sync-now-btn" class="primary-btn" style="padding: 10px 14px; font-size: 13px;">Sincronizar Ahora</button>
+          </div>
+        </div>
+
+        <!-- Groq AI Setup -->
+        <div class="settings-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="settings-group-title">Groq AI</span>
+            <span id="groq-status-badge" class="badge-tag warning">Key Requerida</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
+            Groq transcribe tu voz con Whisper Large v3 y extrae los datos con LLaMA 3.3 70B de forma ultrarrápida.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label" for="groq-api-key-input">API Key de Groq (gsk_...)</label>
+            <div class="form-input-wrapper">
+              <input type="password" id="groq-api-key-input" class="form-input" placeholder="Pega tu clave gsk_...">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button id="save-groq-key-btn" class="primary-btn" style="padding: 10px 14px; font-size: 13px;">Guardar Key</button>
+            <button id="test-groq-btn" class="secondary-btn" style="padding: 10px 14px; font-size: 13px;">Probar Conexión</button>
+          </div>
+        </div>
+
+        <!-- AI Engine Preferences -->
+        <div class="settings-group">
+          <span class="settings-group-title">Preferencias</span>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="form-label" for="groq-model-select" style="margin-bottom: 0;">Modelo de Lenguaje</label>
+              <button id="refresh-models-btn" type="button" style="background: none; border: none; font-size: 11px; color: var(--text-muted); cursor: pointer; text-decoration: underline; padding: 0;">Buscar activos</button>
+            </div>
+            <select id="groq-model-select" class="form-select">
+              <option value="openai/gpt-oss-20b" selected>OpenAI GPT-OSS 20B (Groq Producción - 1000 tps)</option>
+              <option value="openai/gpt-oss-120b">OpenAI GPT-OSS 120B (Groq Producción - Flagship 500 tps)</option>
+              <option value="qwen/qwen3.8-27b">Qwen 3.8 27B (Groq Producción - 450 tps)</option>
+              <option value="llama-3.1-8b-instant">LLaMA 3.1 8B Instant (Groq - 560 tps)</option>
+              <option value="llama-3.3-70b-versatile">LLaMA 3.3 70B Versatile (Groq - 280 tps)</option>
+            </select>
+            <p id="model-status-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Detecta automáticamente los modelos activos en tu cuenta de Groq.</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="audio-mode-select">Reconocimiento de Voz</label>
+            <select id="audio-mode-select" class="form-select">
+              <option value="whisper">Groq Whisper Large v3 (Grabación de audio precisa)</option>
+              <option value="webspeech">Nativo del Navegador (Web Speech API)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="default-currency-select">Moneda Principal</label>
+            <select id="default-currency-select" class="form-select">
+              <option value="PEN">Soles (S/ - PEN)</option>
+              <option value="USD">Dólares ($ - USD)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Backup & Data -->
+        <div class="settings-group">
+          <span class="settings-group-title">Datos Locales</span>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
+            Tus datos se guardan exclusivamente en tu dispositivo de forma privada.
+          </p>
+          <div style="display: flex; gap: 8px;">
+            <button id="export-backup-btn" class="secondary-btn" style="flex: 1; padding: 10px;">Exportar Copia</button>
+            <label class="secondary-btn" style="flex: 1; text-align: center; cursor: pointer; padding: 10px;">
+              Restaurar
+              <input type="file" id="import-backup-input" accept=".json" style="display: none;">
+            </label>
+          </div>
+          <button id="reset-demo-data-btn" class="secondary-btn" style="color: var(--expense-red); border-color: rgba(248,113,113,0.2); margin-top: 6px; padding: 10px;">
+            Reiniciar datos
+          </button>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Floating Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Inicio</span>
+      </button>
+
+      <button class="nav-item" data-tab="accounts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        <span>Cuentas</span>
+      </button>
+
+      <!-- Center Voice Action Button -->
+      <div class="nav-voice-btn-container">
+        <button id="nav-voice-btn" class="nav-voice-btn" aria-label="Hablar para registrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+
+      <button class="nav-item" data-tab="debts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span>Deudas</span>
+      </button>
+
+      <button class="nav-item" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Ajustes</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ==========================================
+       VOICE RECORDING BOTTOM SHEET MODAL
+  =========================================== -->
+  <div id="voice-modal-overlay" class="modal-overlay">
+    <div class="bottom-sheet">
+      <div class="drag-handle"></div>
+      
+      <div class="sheet-header">
+        <h2 class="sheet-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          </svg>
+          Dictar movimiento
+        </h2>
+        <button id="close-voice-sheet-btn" class="close-btn" aria-label="Cerrar modal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Visualizer & Microphone Center -->
+      <div class="voice-visualizer-box">
+        <div id="sheet-mic-btn" class="mic-pulse-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </div>
+
+        <!-- Frequency wave canvas -->
+        <canvas id="audio-waveform" width="300" height="38"></canvas>
+
+        <p id="voice-status-text" class="voice-status-text">
+          Toca el micrófono para hablar
+        </p>
+
+        <!-- Live transcript bubble -->
+        <div id="voice-transcript-bubble" class="voice-transcript-bubble" style="display: none;">
+          ...
+        </div>
+
+        <!-- Parsed Transaction Card Preview -->
+        <div id="parsed-result-card" class="parsed-result-card" style="display: none;">
+          <div class="parsed-result-header">
+            <span id="parsed-type" class="parsed-type-badge egreso">Egreso</span>
+            <span id="parsed-amount" class="parsed-amount-display">- S/ 0.00</span>
+          </div>
+
+          <div class="parsed-grid">
+            <div class="parsed-grid-item">
+              <div class="parsed-grid-label">Cuenta</div>
+              <div id="parsed-account" class="parsed-grid-value">BCP</div>
+            </div>
+            <div class="parsed-grid-item">
+              <div class="parsed-grid-label">Categoría</div>
+              <div id="parsed-category" class="parsed-grid-value">Alimentación</div>
+            </div>
+            <div class="parsed-grid-item" style="grid-column: span 2;">
+              <div class="parsed-grid-label">Descripción</div>
+              <div id="parsed-desc" class="parsed-grid-value">Almuerzo</div>
+            </div>
+            <div id="parsed-person-item" class="parsed-grid-item" style="display: none; grid-column: span 2;">
+              <div class="parsed-grid-label">Persona</div>
+              <div id="parsed-person" class="parsed-grid-value">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm Action Button -->
+        <div class="sheet-actions-row">
+          <button id="confirm-save-btn" class="primary-btn" style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Confirmar y Guardar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  <!-- Modal: Agregar Nueva Cuenta Bancaria -->
+  <div id="add-account-modal-overlay" class="modal-overlay">
+    <div class="bottom-sheet" style="max-height: 85vh;">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h2 class="sheet-title">Nueva Cuenta</h2>
+        <button id="close-add-account-btn" class="close-btn" aria-label="Cerrar modal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div style="padding: 16px 20px 24px;">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label" for="new-acc-name">Nombre de la cuenta o banco</label>
+          <input type="text" id="new-acc-name" class="form-input" placeholder="Ej. Yape, BCP, Plin, Efectivo...">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label" for="new-acc-type">Tipo de cuenta</label>
+          <select id="new-acc-type" class="form-select">
+            <option value="Banco">Banco</option>
+            <option value="Billetera">Billetera Digital</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta de Crédito</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label class="form-label" for="new-acc-balance">Saldo Inicial (S/)</label>
+          <input type="number" id="new-acc-balance" class="form-input" placeholder="0.00" step="0.10">
+        </div>
+
+        <button id="submit-new-account-btn" class="primary-btn" style="width: 100%;">
+          Crear Cuenta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module Script -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1077 @@
+/* ===================================================
+   HERO BALANCE CARD (Minimalist Matte)
+=================================================== */
+.balance-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 20px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.balance-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.balance-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.visibility-toggle {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.balance-amount-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.balance-currency {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.balance-value {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.balance-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mini-stat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-stat.income .mini-stat-icon {
+  background: var(--income-green-soft);
+  color: var(--income-green);
+}
+
+.mini-stat.expense .mini-stat-icon {
+  background: var(--expense-red-soft);
+  color: var(--expense-red);
+}
+
+.mini-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-stat-title {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.mini-stat-value {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+.mini-stat.income .mini-stat-value { color: var(--income-green); }
+.mini-stat.expense .mini-stat-value { color: var(--expense-red); }
+
+/* ===================================================
+   ACCOUNTS CAROUSEL (Minimalist)
+=================================================== */
+.accounts-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 2px 0 8px 0;
+  margin: 0 -18px;
+  padding-left: 18px;
+  padding-right: 18px;
+  scroll-snap-type: x mandatory;
+}
+
+.account-card-item {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 96px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.account-card-item:hover, .account-card-item:active {
+  border-color: var(--border-medium);
+  background: var(--bg-card-hover);
+}
+
+.account-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-code-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-main);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.account-type-tag {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.account-card-bottom {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-balance {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+/* ===================================================
+   VOICE ACTION BANNER (Minimalist)
+=================================================== */
+.voice-hero-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.voice-hero-banner:hover, .voice-hero-banner:active {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+}
+
+.voice-hero-content h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.voice-hero-content p {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.voice-hero-icon-minimal {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Quick Action Buttons Row */
+.quick-actions-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.quick-action-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.quick-action-btn:hover, .quick-action-btn:active {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+  color: var(--text-main);
+}
+
+.quick-action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.quick-action-btn.green svg { color: var(--income-green); }
+.quick-action-btn.red svg { color: var(--expense-red); }
+.quick-action-btn.neutral svg { color: var(--text-muted); }
+
+/* ===================================================
+   TRANSACTION LIST & FEED (No Emojis, Minimalist)
+=================================================== */
+.tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tx-date-group-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  transition: all var(--transition-fast);
+}
+
+.tx-item:hover, .tx-item:active {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+}
+
+.tx-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tx-dir-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+
+.tx-dir-indicator.income {
+  color: var(--income-green);
+  background: var(--income-green-soft);
+  border-color: transparent;
+}
+
+.tx-dir-indicator.expense {
+  color: var(--expense-red);
+  background: var(--expense-red-soft);
+  border-color: transparent;
+}
+
+.tx-dir-indicator.transfer {
+  color: var(--transfer-blue);
+  background: var(--transfer-blue-soft);
+  border-color: transparent;
+}
+
+.tx-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tx-desc {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tx-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.tx-category-name {
+  color: var(--text-muted);
+}
+
+.tx-account-tag {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.tx-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.tx-amount {
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tx-amount.income { color: var(--income-green); }
+.tx-amount.expense { color: var(--text-main); }
+.tx-amount.transfer { color: var(--transfer-blue); }
+
+.tx-time {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.empty-state svg {
+  width: 36px;
+  height: 36px;
+  opacity: 0.3;
+}
+
+/* ===================================================
+   VOICE RECORDER BOTTOM SHEET MODAL (Minimalist)
+=================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bottom-sheet {
+  width: 100%;
+  max-width: 460px;
+  background: var(--bg-card);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  border-top: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-lg);
+  padding: 14px 18px calc(20px + env(safe-area-inset-bottom, 12px)) 18px;
+  transform: translateY(100%);
+  transition: transform var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-overlay.active .bottom-sheet {
+  transform: translateY(0);
+}
+
+.drag-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: #cbd5e1;
+  margin: 0 auto 14px auto;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sheet-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.close-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.close-btn:hover, .close-btn:active {
+  color: var(--text-main);
+  border-color: var(--border-medium);
+}
+
+/* Voice Visualizer Area */
+.voice-visualizer-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 8px;
+  text-align: center;
+  gap: 14px;
+}
+
+.mic-pulse-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mic-pulse-circle.recording {
+  border-color: var(--expense-red);
+  color: var(--expense-red);
+  background: var(--expense-red-soft);
+  animation: subtlePulse 1.5s infinite;
+}
+
+@keyframes subtlePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.mic-pulse-circle svg {
+  width: 32px;
+  height: 32px;
+}
+
+#audio-waveform {
+  width: 100%;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+
+.voice-status-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  min-height: 18px;
+}
+
+.voice-transcript-bubble {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-main);
+  width: 100%;
+  text-align: left;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Parsed Transaction Card Preview */
+.parsed-result-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.parsed-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parsed-type-badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.parsed-type-badge.egreso {
+  background: var(--expense-red-soft);
+  color: var(--expense-red);
+}
+
+.parsed-type-badge.ingreso {
+  background: var(--income-green-soft);
+  color: var(--income-green);
+}
+
+.parsed-type-badge.transferencia {
+  background: var(--transfer-blue-soft);
+  color: var(--transfer-blue);
+}
+
+.parsed-amount-display {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.parsed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.parsed-grid-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.parsed-grid-label {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.parsed-grid-value {
+  color: var(--text-main);
+  font-weight: 600;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Action Buttons in Sheet */
+.sheet-actions-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.primary-btn {
+  flex: 1;
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.primary-btn:hover, .primary-btn:active {
+  opacity: 0.9;
+}
+
+.secondary-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.secondary-btn:hover, .secondary-btn:active {
+  color: var(--text-main);
+  border-color: var(--border-medium);
+}
+
+/* ===================================================
+   SETTINGS & FORMS (Minimalist)
+=================================================== */
+.settings-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.settings-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.form-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.form-input:focus {
+  border-color: var(--border-focus);
+}
+
+.form-select {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.form-select:focus {
+  border-color: var(--border-focus);
+}
+
+.badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badge-tag.success {
+  background: var(--income-green-soft);
+  color: var(--income-green);
+  border-color: transparent;
+}
+
+.badge-tag.warning {
+  background: rgba(245, 158, 11, 0.08);
+  color: #f59e0b;
+  border-color: transparent;
+}
+
+/* PWA Install Banner */
+.pwa-install-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pwa-install-banner .install-btn {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Toast Notification (Minimalist) */
+.toast-notice {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-medium);
+  color: var(--text-main);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  transition: transform var(--transition-smooth);
+  pointer-events: none;
+}
+
+.toast-notice.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===================================================
+   DEBTS & LOANS (Minimalist)
+=================================================== */
+.debts-widget-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all var(--transition-fast);
+}
+
+.debts-widget-card:hover, .debts-widget-card:active {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+}
+
+.debts-widget-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.debts-widget-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.debts-widget-val {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.debts-widget-val.income { color: var(--income-green); }
+.debts-widget-val.expense { color: var(--expense-red); }
+
+.debts-widget-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border-subtle);
+}
+
+.debts-widget-arrow {
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+}
+
+/* Debts Summary in Tab */
+.debts-summary-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.debt-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.debt-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.debt-stat-val {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+
+.debt-stat-card.to-collect .debt-stat-val { color: var(--income-green); }
+.debt-stat-card.to-pay .debt-stat-val { color: var(--expense-red); }
+
+/* Debt Item in List */
+.debt-item {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  gap: 10px;
+  transition: all var(--transition-fast);
+}
+
+.debt-item:hover {
+  border-color: var(--border-medium);
+}
+
+.debt-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.debt-person-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.debt-avatar-pill {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-main);
+  letter-spacing: 0.5px;
+}
+
+.debt-person-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.debt-concept {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.debt-amount-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.debt-amount-val {
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.debt-amount-val.me_deben { color: var(--income-green); }
+.debt-amount-val.debo { color: var(--expense-red); }
+
+.debt-status-tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-top: 2px;
+}
+
+.debt-status-tag.pendiente {
+  background: rgba(245, 158, 11, 0.08);
+  color: #d97706;
+}
+
+.debt-status-tag.pagado {
+  background: var(--income-green-soft);
+  color: var(--income-green);
+}
+
+.debt-item-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.debt-action-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.debt-action-btn:hover {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}

@@ -1,0 +1,51 @@
+:root {
+  /* Color Palette - Minimalist Light Theme (Default) */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-elevated: #f1f5f9;
+  
+  --border-subtle: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-focus: #0f172a;
+
+  /* Minimalist Accents (Restrained, high contrast) */
+  --accent-primary: #0f172a;
+  --accent-secondary: #334155;
+  --accent-muted: #64748b;
+  
+  /* Financial States (Clean, matte, natural) */
+  --income-green: #16a34a;
+  --income-green-soft: rgba(22, 163, 74, 0.08);
+  
+  --expense-red: #dc2626;
+  --expense-red-soft: rgba(220, 38, 38, 0.08);
+
+  --transfer-blue: #475569;
+  --transfer-blue-soft: rgba(71, 85, 105, 0.08);
+
+  /* Typography Colors */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Elevation & Shadows (Soft, natural) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.08);
+
+  /* Dimensions & Spacing */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  --nav-height: 68px;
+  --header-height: 56px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-smooth: 0.25s ease;
+}
