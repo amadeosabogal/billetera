@@ -1,9 +1,10 @@
 {
+  "id": "/",
   "name": "Billetera Voz - Finanzas Inteligentes",
   "short_name": "BilleteraVoz",
   "description": "Registra tus ingresos y gastos hablando con Inteligencia Artificial ultrarrápida",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f8fafc",
@@ -11,13 +12,13 @@
   "categories": ["finance", "productivity"],
   "icons": [
     {
-      "src": "./icons/icon.jpg",
+      "src": "/icons/icon.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "./icons/icon.jpg",
+      "src": "/icons/icon.jpg",
       "sizes": "192x192",
       "type": "image/jpeg",
       "purpose": "any"
@@ -28,14 +29,20 @@
       "name": "Registrar por Voz",
       "short_name": "Voz",
       "description": "Hablar para registrar gasto o ingreso",
-      "url": "./?action=voice",
-      "icons": [{ "src": "./icons/icon.jpg", "sizes": "192x192" }]
+      "url": "/?action=voice",
+      "icons": [{ "src": "/icons/icon.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ver Historial",
+      "short_name": "Historial",
+      "url": "/?tab=history",
+      "icons": [{ "src": "/icons/icon.jpg", "sizes": "192x192" }]
     },
     {
       "name": "Ver Cuentas",
       "short_name": "Cuentas",
-      "url": "./?tab=accounts",
-      "icons": [{ "src": "./icons/icon.jpg", "sizes": "192x192" }]
+      "url": "/?tab=accounts",
+      "icons": [{ "src": "/icons/icon.jpg", "sizes": "192x192" }]
     }
   ]
 }
