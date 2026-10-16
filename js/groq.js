@@ -11,9 +11,9 @@ const GROQ_MODELS_URL = 'https://api.groq.com/openai/v1/models';
  * Note: mixtral-8x7b-32768, llama3-8b-8192, and llama3-70b-8192 have been decommissioned by Groq.
  */
 export const VERIFIED_ACTIVE_MODELS = [
+  'llama-3.1-8b-instant',
   'openai/gpt-oss-20b',
   'openai/gpt-oss-120b',
-  'llama-3.1-8b-instant',
   'llama-3.3-70b-versatile',
   'qwen/qwen3.8-27b'
 ];
@@ -82,6 +82,23 @@ export async function fetchAvailableGroqModels(apiKey) {
       });
 
     if (chatModels.length > 0) {
+      const preferredOrder = [
+        'llama-3.1-8b-instant',
+        'openai/gpt-oss-20b',
+        'openai/gpt-oss-120b',
+        'llama-3.3-70b-versatile',
+        'qwen/qwen3.8-27b'
+      ];
+
+      chatModels.sort((a, b) => {
+        const idxA = preferredOrder.indexOf(a);
+        const idxB = preferredOrder.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+      });
+
       cachedModels = chatModels;
       lastCacheKey = cleanKey;
       return chatModels;
@@ -266,6 +283,7 @@ FORMATO DE SALIDA (JSON ÚNICAMENTE):
             { role: 'user', content: speechText }
           ],
           response_format: { type: 'json_object' },
+          max_tokens: 350,
           temperature: 0.1
         })
       });
@@ -274,16 +292,24 @@ FORMATO DE SALIDA (JSON ÚNICAMENTE):
         const errorData = await response.json().catch(() => ({}));
         const errMsg = errorData.error?.message || `Error (${response.status})`;
 
-        // If the model has access issues, rate limits, or is deprecated, seamlessly try next model
+        // If the model has access issues, rate limits, token quotas, or is deprecated, seamlessly try next model
         if (
           errMsg.includes('does not exist') ||
           errMsg.includes('access to it') ||
           errMsg.includes('decommissioned') ||
           errMsg.includes('deprecated') ||
+          errMsg.includes('Request too large') ||
+          errMsg.includes('tokens per minute') ||
+          errMsg.includes('enforced limit') ||
+          errMsg.includes('rate limit') ||
+          errMsg.includes('OTPM') ||
+          errMsg.includes('TPM') ||
           response.status === 404 ||
-          response.status === 400
+          response.status === 400 ||
+          response.status === 413 ||
+          response.status === 429
         ) {
-          console.warn(`Modelo ${currentModel} no disponible en Groq (${errMsg}), intentando siguiente modelo activo...`);
+          console.warn(`Modelo ${currentModel} con limitación en Groq (${errMsg}), intentando siguiente modelo activo...`);
           lastError = new Error(errMsg);
           continue;
         }
@@ -295,13 +321,17 @@ FORMATO DE SALIDA (JSON ÚNICAMENTE):
       if (rawContent) break;
     } catch (err) {
       lastError = err;
+      const msg = err.message || '';
       if (
-        err.message && (
-          err.message.includes('does not exist') ||
-          err.message.includes('access to it') ||
-          err.message.includes('decommissioned') ||
-          err.message.includes('deprecated')
-        )
+        msg.includes('does not exist') ||
+        msg.includes('access to it') ||
+        msg.includes('decommissioned') ||
+        msg.includes('deprecated') ||
+        msg.includes('Request too large') ||
+        msg.includes('tokens per minute') ||
+        msg.includes('enforced limit') ||
+        msg.includes('rate limit') ||
+        msg.includes('OTPM')
       ) {
         continue;
       }
