@@ -2,9 +2,10 @@
  * UI Renderer and Controller for Billetera Voz (With Debts & Loans)
  */
 import { store } from './store.js';
-import { testGroqConnection, transcribeWithGroqWhisper, extractTransactionData, fetchAvailableGroqModels, VERIFIED_ACTIVE_MODELS } from './groq.js';
+import { testGroqConnection, transcribeWithGroqWhisper, extractTransactionData, fetchAvailableGroqModels, pingGroqQuota, VERIFIED_ACTIVE_MODELS } from './groq.js';
 import { voiceManager } from './voice.js';
 import { sendOtpEmail, verifyOtpToken, signOutUser, getCurrentSessionUser } from './supabase.js';
+import { quotaManager } from './quota.js';
 
 export class UIController {
   constructor() {
@@ -20,6 +21,11 @@ export class UIController {
       this.renderAll();
     });
     this.renderAll();
+
+    // Subscribe to real-time Groq rate limit & token quota
+    quotaManager.subscribe((status) => {
+      this.updateQuotaUI(status);
+    });
 
     // Listen for PWA installation prompt
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -726,6 +732,85 @@ export class UIController {
     }
   }
 
+  updateQuotaUI(status) {
+    if (!status) return;
+
+    // 1. Header live pill
+    const headerPill = document.getElementById('header-groq-pill');
+    const headerTokens = document.getElementById('header-groq-tokens-text');
+    if (headerPill && headerTokens) {
+      headerTokens.textContent = `${status.remainingTokens.toLocaleString()} TPM`;
+      headerPill.className = `header-groq-pill ${status.status}`;
+      headerPill.title = `Groq IA: ${status.statusText} (${status.remainingTokens.toLocaleString()} tokens disponibles, ${status.remainingRequests} req/min)`;
+    }
+
+    // 2. Voice modal quota card
+    const voicePill = document.getElementById('quota-status-pill');
+    const voiceStatusText = document.getElementById('quota-status-text');
+    const voiceModelName = document.getElementById('quota-model-name');
+    const voiceFill = document.getElementById('quota-fill');
+    const voiceTokensVal = document.getElementById('quota-tokens-val');
+    const voiceRequestsVal = document.getElementById('quota-requests-val');
+    const voiceResetVal = document.getElementById('quota-reset-val');
+    const micBtn = document.getElementById('sheet-mic-btn');
+
+    if (voicePill) voicePill.className = `quota-status-pill ${status.status}`;
+    if (voiceStatusText) voiceStatusText.textContent = status.statusText;
+    if (voiceModelName) voiceModelName.textContent = status.modelName;
+    if (voiceFill) {
+      voiceFill.style.width = `${status.percentTokens}%`;
+      voiceFill.className = `quota-fill ${status.status === 'ready' ? '' : status.status}`;
+    }
+    if (voiceTokensVal) voiceTokensVal.textContent = `${status.remainingTokens.toLocaleString()} / ${status.limitTokens.toLocaleString()}`;
+    if (voiceRequestsVal) voiceRequestsVal.textContent = `${status.remainingRequests} / ${status.limitRequests} RPM`;
+    if (voiceResetVal) {
+      voiceResetVal.textContent = `${status.resetSeconds}s`;
+      voiceResetVal.style.color = status.resetSeconds > 0 ? 'var(--expense-red)' : 'var(--text-main)';
+    }
+
+    // Mic button locking during cooldown
+    if (micBtn && !voiceManager.isRecording) {
+      if (!status.canRecord) {
+        micBtn.classList.add('disabled');
+        micBtn.setAttribute('title', status.statusText);
+        const statusTextEl = document.getElementById('voice-status-text');
+        if (statusTextEl && !this.parsedPendingTx) {
+          statusTextEl.textContent = `Cuota al límite. Disponible en ${status.resetSeconds}s...`;
+        }
+      } else {
+        micBtn.classList.remove('disabled');
+        micBtn.removeAttribute('title');
+      }
+    }
+
+    // 3. Settings quota panel
+    const sBadge = document.getElementById('settings-quota-badge');
+    const sFill = document.getElementById('settings-quota-fill');
+    const sTokens = document.getElementById('settings-quota-tokens-text');
+    const sRequests = document.getElementById('settings-quota-requests-text');
+    const sReset = document.getElementById('settings-quota-reset-text');
+    const sAvail = document.getElementById('settings-quota-avail-text');
+
+    if (sBadge) {
+      sBadge.textContent = status.status === 'ready' ? 'Disponible' : (status.status === 'warning' ? 'Cuota Baja' : 'Enfriamiento');
+      sBadge.className = `badge-tag ${status.status === 'ready' ? 'success' : (status.status === 'warning' ? 'warning' : 'danger')}`;
+    }
+    if (sFill) {
+      sFill.style.width = `${status.percentTokens}%`;
+      sFill.className = `quota-fill ${status.status === 'ready' ? '' : status.status}`;
+    }
+    if (sTokens) sTokens.textContent = `${status.remainingTokens.toLocaleString()} / ${status.limitTokens.toLocaleString()}`;
+    if (sRequests) sRequests.textContent = `${status.remainingRequests} / ${status.limitRequests} RPM`;
+    if (sReset) {
+      sReset.textContent = `${status.resetSeconds}s`;
+      sReset.style.color = status.resetSeconds > 0 ? 'var(--expense-red)' : 'var(--income-green)';
+    }
+    if (sAvail) {
+      sAvail.textContent = status.statusText;
+      sAvail.style.color = status.status === 'ready' ? 'var(--income-green)' : (status.status === 'warning' ? '#d97706' : 'var(--expense-red)');
+    }
+  }
+
   /* ===================================================
      VOICE MODAL RECORDING FLOW
   =================================================== */
@@ -735,6 +820,10 @@ export class UIController {
 
     this.setVoiceModalState('idle');
     overlay.classList.add('active');
+
+    // Force quota display update
+    const currentModel = store.settings.selectedModel || 'llama-3.1-8b-instant';
+    this.updateQuotaUI(quotaManager.getStatus(currentModel));
 
     if (!store.settings.groqApiKey) {
       this.setVoiceStatus('Por favor ingresa tu API Key de Groq en Ajustes para procesar tu voz.');
@@ -794,6 +883,13 @@ export class UIController {
       this.closeVoiceModal();
       this.switchTab('settings');
       this.showToast('Pega tu API Key de Groq en Ajustes para comenzar');
+      return;
+    }
+
+    const currentModel = store.settings.selectedModel || 'llama-3.1-8b-instant';
+    const quota = quotaManager.getStatus(currentModel);
+    if (!quota.canRecord && !voiceManager.isRecording) {
+      this.showToast(`Cuota al límite. Espera ${quota.resetSeconds}s para que se liberen tokens.`);
       return;
     }
 
@@ -1234,9 +1330,37 @@ export class UIController {
       }
     });
 
+    document.getElementById('header-groq-pill')?.addEventListener('click', () => {
+      this.openVoiceModal();
+    });
+
+    document.getElementById('ping-groq-quota-btn')?.addEventListener('click', async () => {
+      const key = store.settings.groqApiKey || document.getElementById('groq-api-key-input')?.value.trim();
+      if (!key) {
+        this.showToast('Ingresa tu API Key de Groq primero');
+        return;
+      }
+      const model = store.settings.selectedModel || 'llama-3.1-8b-instant';
+      this.showToast('Consultando cuota en tiempo real...');
+      try {
+        const pingStatus = await pingGroqQuota(key, model);
+        this.updateQuotaUI(pingStatus);
+        this.showToast(`Cuota en vivo: ${pingStatus.remainingTokens.toLocaleString()} tokens disponibles`);
+      } catch (err) {
+        this.showToast(`Error: ${err.message}`, 4000);
+      }
+    });
+
+    document.getElementById('reset-groq-quota-btn')?.addEventListener('click', () => {
+      quotaManager.resetAll();
+      this.showToast('Contador local de cuota reiniciado');
+    });
+
     document.getElementById('groq-model-select')?.addEventListener('change', (e) => {
-      store.updateSettings({ selectedModel: e.target.value });
-      this.showToast(`Modelo: ${e.target.value}`);
+      const newModel = e.target.value;
+      store.updateSettings({ selectedModel: newModel });
+      this.updateQuotaUI(quotaManager.getStatus(newModel));
+      this.showToast(`Modelo: ${newModel}`);
     });
 
     document.getElementById('default-currency-select')?.addEventListener('change', (e) => {

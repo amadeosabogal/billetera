@@ -10,6 +10,8 @@ const GROQ_MODELS_URL = 'https://api.groq.com/openai/v1/models';
  * Verified active production models from official Groq documentation (2025/2026)
  * Note: mixtral-8x7b-32768, llama3-8b-8192, and llama3-70b-8192 have been decommissioned by Groq.
  */
+import { quotaManager } from './quota.js';
+
 export const VERIFIED_ACTIVE_MODELS = [
   'llama-3.1-8b-instant',
   'openai/gpt-oss-20b',
@@ -310,6 +312,17 @@ FORMATO DE SALIDA (JSON ÚNICAMENTE):
           response.status === 429
         ) {
           console.warn(`Modelo ${currentModel} con limitación en Groq (${errMsg}), intentando siguiente modelo activo...`);
+          let waitSec = 5;
+          const matchWait = errMsg.match(/try again in ([\d\.]+)s/i) || errMsg.match(/retry after ([\d\.]+)s/i);
+          if (matchWait) {
+            waitSec = parseFloat(matchWait[1]);
+          } else {
+            const retryHeader = response.headers.get?.('retry-after');
+            if (retryHeader) waitSec = parseFloat(retryHeader);
+          }
+          if (errMsg.includes('rate limit') || errMsg.includes('tokens') || response.status === 429) {
+            quotaManager.recordLockout(currentModel, waitSec, errMsg);
+          }
           lastError = new Error(errMsg);
           continue;
         }
@@ -317,6 +330,9 @@ FORMATO DE SALIDA (JSON ÚNICAMENTE):
       }
 
       const jsonResult = await response.json();
+      const usedTokens = jsonResult.usage?.total_tokens || 350;
+      quotaManager.recordUsage(currentModel, usedTokens, response.headers);
+
       rawContent = jsonResult.choices[0]?.message?.content;
       if (rawContent) break;
     } catch (err) {
@@ -369,4 +385,41 @@ function isDecommissioned(modelId) {
     lower.includes('gemma-7b') ||
     lower.includes('gemma2-9b')
   );
+}
+
+/**
+ * Ping Groq with a 1-token minimal test to check live quota and rate limit status
+ */
+export async function pingGroqQuota(apiKey, model = 'llama-3.1-8b-instant') {
+  if (!apiKey || apiKey.trim().length === 0) {
+    throw new Error('API Key requerida');
+  }
+  const cleanKey = apiKey.trim();
+  const response = await fetch(GROQ_CHAT_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${cleanKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: [{ role: 'user', content: 'ok' }],
+      max_tokens: 1
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const errMsg = errorData.error?.message || `Error (${response.status})`;
+    let waitSec = 5;
+    const matchWait = errMsg.match(/try again in ([\d\.]+)s/i);
+    if (matchWait) waitSec = parseFloat(matchWait[1]);
+    quotaManager.recordLockout(model, waitSec, errMsg);
+    throw new Error(errMsg);
+  }
+
+  const jsonResult = await response.json();
+  const usedTokens = jsonResult.usage?.total_tokens || 10;
+  quotaManager.recordUsage(model, usedTokens, response.headers);
+  return quotaManager.getStatus(model);
 }

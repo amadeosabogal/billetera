@@ -49,6 +49,10 @@
         </div>
       </div>
       <div class="header-actions">
+        <div id="header-groq-pill" class="header-groq-pill ready" title="Cuota IA en tiempo real (Tokens por minuto)">
+          <span class="quota-dot"></span>
+          <span id="header-groq-tokens-text">6,000 TPM</span>
+        </div>
         <button id="toggle-balance-visibility" class="icon-btn" title="Ocultar o mostrar saldo" aria-label="Ocultar o mostrar saldo">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -423,6 +427,46 @@
             <button id="save-groq-key-btn" class="primary-btn" style="padding: 10px 14px; font-size: 13px;">Guardar Key</button>
             <button id="test-groq-btn" class="secondary-btn" style="padding: 10px 14px; font-size: 13px;">Probar Conexión</button>
           </div>
+
+          <!-- Live Rate Limits / Quota Panel in Settings -->
+          <div id="settings-quota-panel" style="margin-top: 14px; background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600;">Cuota en Tiempo Real (TPM / RPM)</span>
+              <span id="settings-quota-badge" class="badge-tag success">Operativo</span>
+            </div>
+
+            <div class="quota-track" style="height: 6px; margin-bottom: 10px;">
+              <div id="settings-quota-fill" class="quota-fill" style="width: 100%;"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 10px;">
+              <div>
+                <span style="color: var(--text-muted); font-size: 11px; display: block;">Tokens restantes (TPM)</span>
+                <strong id="settings-quota-tokens-text" style="color: var(--text-main);">6,000 / 6,000</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); font-size: 11px; display: block;">Peticiones restantes</span>
+                <strong id="settings-quota-requests-text" style="color: var(--text-main);">30 / 30 RPM</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); font-size: 11px; display: block;">Reinicio de cuota</span>
+                <strong id="settings-quota-reset-text" style="color: var(--income-green);">0s</strong>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); font-size: 11px; display: block;">Disponibilidad</span>
+                <strong id="settings-quota-avail-text" style="color: var(--income-green);">Listo para registrar</strong>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button id="ping-groq-quota-btn" type="button" class="secondary-btn" style="flex: 1; padding: 6px 10px; font-size: 12px;">
+                Verificar Cuota en Vivo
+              </button>
+              <button id="reset-groq-quota-btn" type="button" class="secondary-btn" style="padding: 6px 10px; font-size: 12px;" title="Restablecer contador local">
+                Reiniciar
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- AI Engine Preferences -->
@@ -555,6 +599,36 @@
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
+      </div>
+
+      <!-- Real-time Groq Quota Monitor Card -->
+      <div id="voice-quota-monitor" class="quota-monitor-card" style="margin-top: 10px;">
+        <div class="quota-monitor-header">
+          <div class="quota-status-pill ready" id="quota-status-pill">
+            <span class="quota-dot"></span>
+            <span id="quota-status-text">Listo para registrar</span>
+          </div>
+          <span id="quota-model-name" class="quota-model-name">LLaMA 3.1 8B</span>
+        </div>
+
+        <div class="quota-track">
+          <div id="quota-fill" class="quota-fill" style="width: 100%;"></div>
+        </div>
+
+        <div class="quota-details-row">
+          <div class="quota-detail-col">
+            <span class="quota-detail-label">Tokens / min</span>
+            <span id="quota-tokens-val" class="quota-detail-val">6,000 / 6,000</span>
+          </div>
+          <div class="quota-detail-col">
+            <span class="quota-detail-label">Peticiones</span>
+            <span id="quota-requests-val" class="quota-detail-val">30 / 30 RPM</span>
+          </div>
+          <div class="quota-detail-col">
+            <span class="quota-detail-label">Reinicio</span>
+            <span id="quota-reset-val" class="quota-detail-val">0s</span>
+          </div>
+        </div>
       </div>
 
       <!-- Visualizer & Microphone Center -->

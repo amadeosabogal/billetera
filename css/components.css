@@ -1075,3 +1075,155 @@
   background: var(--accent-primary);
   color: var(--text-inverse);
 }
+
+/* ==========================================
+   GROQ REAL-TIME QUOTA & RATE LIMIT MONITOR
+=========================================== */
+.header-groq-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.header-groq-pill:hover {
+  border-color: var(--border-medium);
+  color: var(--text-main);
+}
+
+.quota-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--income-green);
+  flex-shrink: 0;
+  transition: background-color var(--transition-smooth);
+}
+
+.quota-status-pill.ready .quota-dot,
+.header-groq-pill.ready .quota-dot {
+  background: var(--income-green);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+}
+
+.quota-status-pill.warning .quota-dot,
+.header-groq-pill.warning .quota-dot {
+  background: #d97706;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.15);
+}
+
+.quota-status-pill.cooldown .quota-dot,
+.header-groq-pill.cooldown .quota-dot {
+  background: var(--expense-red);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+.quota-monitor-card {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.quota-monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.quota-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.quota-status-pill.ready {
+  color: var(--income-green);
+}
+
+.quota-status-pill.warning {
+  color: #d97706;
+}
+
+.quota-status-pill.cooldown {
+  color: var(--expense-red);
+}
+
+.quota-model-name {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.quota-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.quota-fill {
+  height: 100%;
+  background: var(--income-green);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.quota-fill.warning {
+  background: #d97706;
+}
+
+.quota-fill.cooldown {
+  background: var(--expense-red);
+}
+
+.quota-details-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.quota-detail-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.quota-detail-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.quota-detail-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+.mic-pulse-circle.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.6);
+}
+
