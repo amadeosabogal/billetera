@@ -162,7 +162,7 @@
         <div style="margin-top: 20px;">
           <div class="section-header">
             <h2 class="section-title">Cuentas y Billeteras</h2>
-            <button class="section-action" onclick="document.querySelector('[data-tab=accounts]').click()">
+            <button id="home-manage-accounts-btn" class="section-action">
               Ver todas
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"></polyline>
@@ -208,7 +208,7 @@
         <div style="margin-top: 22px;">
           <div class="section-header">
             <h2 class="section-title">Movimientos Recientes</h2>
-            <button class="section-action" onclick="document.querySelector('[data-tab=history]').click()">
+            <button id="go-to-history-btn" class="section-action">
               Historial
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"></polyline>
@@ -227,7 +227,12 @@
       =========================================== -->
       <section id="tab-accounts" class="tab-view">
         <div class="section-header">
-          <h2 class="section-title">Cuentas Bancarias</h2>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="back-to-home-from-accounts" class="icon-btn" style="width: 30px; height: 30px;" title="Volver al inicio">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <h2 class="section-title">Cuentas Bancarias</h2>
+          </div>
           <button id="open-add-account-btn" class="section-action">+ Nueva Cuenta</button>
         </div>
         <p class="tx-meta" style="margin-bottom: 16px;">
@@ -273,15 +278,54 @@
       </section>
 
       <!-- ==========================================
-           TAB 3: HISTORIAL
+           TAB 3: HISTORIAL (CON FILTRADO POR MES)
       =========================================== -->
       <section id="tab-history" class="tab-view">
         <div class="section-header">
-          <h2 class="section-title">Historial</h2>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="back-to-home-from-history" class="icon-btn" style="width: 30px; height: 30px;" title="Volver al inicio">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <h2 class="section-title">Historial</h2>
+          </div>
+          <button id="export-history-csv-btn" class="section-action" style="font-size: 11px;">Descargar CSV</button>
+        </div>
+
+        <!-- Month Navigation Bar -->
+        <div class="month-selector-bar" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 10px;">
+          <button id="history-prev-month-btn" class="icon-btn" style="width: 32px; height: 32px;" title="Mes anterior">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          
+          <div style="display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center;">
+            <select id="history-month-select" class="form-input" style="padding: 6px 8px; font-size: 13px; font-weight: 600; border: none; background: transparent; cursor: pointer; text-align-last: center; max-width: 220px; color: var(--text-main);">
+              <!-- Dynamic Options -->
+            </select>
+          </div>
+
+          <button id="history-next-month-btn" class="icon-btn" style="width: 32px; height: 32px;" title="Mes siguiente">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
+        <!-- Month Summary Banner -->
+        <div id="history-month-summary" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 12px; text-align: center;">
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Ingresos</span>
+            <span id="history-sum-income" style="font-weight: 700; color: var(--income-green); font-size: 13px; font-variant-numeric: tabular-nums;">+ S/ 0.00</span>
+          </div>
+          <div style="border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);">
+            <span style="color: var(--text-muted); display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Gastos</span>
+            <span id="history-sum-expense" style="font-weight: 700; color: var(--expense-red); font-size: 13px; font-variant-numeric: tabular-nums;">- S/ 0.00</span>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Neto</span>
+            <span id="history-sum-net" style="font-weight: 700; color: var(--text-main); font-size: 13px; font-variant-numeric: tabular-nums;">S/ 0.00</span>
+          </div>
         </div>
 
         <!-- Filter Pills -->
-        <div style="display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto;" class="no-scrollbar">
+        <div style="display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto;" class="no-scrollbar">
           <button class="badge-tag history-filter-btn active" data-filter="todos">Todos</button>
           <button class="badge-tag history-filter-btn" data-filter="egreso">Gastos</button>
           <button class="badge-tag history-filter-btn" data-filter="ingreso">Ingresos</button>
@@ -449,12 +493,12 @@
         <span>Inicio</span>
       </button>
 
-      <button class="nav-item" data-tab="accounts">
+      <button class="nav-item" data-tab="history">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-          <line x1="2" y1="10" x2="22" y2="10"></line>
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
-        <span>Cuentas</span>
+        <span>Historial</span>
       </button>
 
       <!-- Center Voice Action Button -->

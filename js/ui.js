@@ -11,6 +11,7 @@ export class UIController {
     this.currentTab = 'home';
     this.parsedPendingTx = null;
     this.deferredInstallPrompt = null;
+    this.selectedHistoryMonth = new Date().toISOString().substring(0, 7);
   }
 
   init() {
@@ -416,21 +417,151 @@ export class UIController {
     this.showToast('Deuda registrada');
   }
 
+  formatMonthLabel(monthKey) {
+    if (!monthKey || monthKey === 'todos') return 'Todos los meses';
+    const parts = monthKey.split('-');
+    if (parts.length < 2) return monthKey;
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]);
+    const dateObj = new Date(year, month - 1, 1);
+    const str = dateObj.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  getAvailableMonths() {
+    const currentMonth = new Date().toISOString().substring(0, 7);
+    const monthsSet = new Set();
+    monthsSet.add(currentMonth);
+
+    (store.transactions || []).forEach(tx => {
+      if (tx.date && tx.date.length >= 7) {
+        monthsSet.add(tx.date.substring(0, 7));
+      }
+    });
+
+    return Array.from(monthsSet).sort().reverse();
+  }
+
+  navigateHistoryMonth(direction) {
+    const months = this.getAvailableMonths();
+    if (!this.selectedHistoryMonth || this.selectedHistoryMonth === 'todos') {
+      this.selectedHistoryMonth = months[0];
+      this.renderHistoryTab();
+      return;
+    }
+
+    const idx = months.indexOf(this.selectedHistoryMonth);
+    if (direction < 0) {
+      // Previous month
+      if (idx !== -1 && idx < months.length - 1) {
+        this.selectedHistoryMonth = months[idx + 1];
+      } else {
+        const [y, m] = this.selectedHistoryMonth.split('-').map(Number);
+        const prev = new Date(y, m - 2, 1).toISOString().substring(0, 7);
+        this.selectedHistoryMonth = prev;
+      }
+    } else {
+      // Next month
+      if (idx > 0) {
+        this.selectedHistoryMonth = months[idx - 1];
+      } else {
+        const [y, m] = this.selectedHistoryMonth.split('-').map(Number);
+        const next = new Date(y, m, 1).toISOString().substring(0, 7);
+        this.selectedHistoryMonth = next;
+      }
+    }
+    this.renderHistoryTab();
+  }
+
+  exportHistoryToCSV() {
+    const txs = store.transactions;
+    if (!txs || txs.length === 0) {
+      this.showToast('No hay transacciones para exportar');
+      return;
+    }
+    const headers = ['Fecha', 'Hora', 'Tipo', 'Monto', 'Moneda', 'Cuenta', 'Categoría', 'Descripción'];
+    const rows = txs.map(t => [
+      t.date || '',
+      t.time || '',
+      t.type || '',
+      t.amount || 0,
+      t.currency || 'PEN',
+      `"${(store.getAccount(t.accountId)?.name || t.accountId || '').replace(/"/g, '""')}"`,
+      `"${(t.category || '').replace(/"/g, '""')}"`,
+      `"${(t.desc || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `billetera_historial_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.showToast('Historial descargado en CSV');
+  }
+
   renderHistoryTab() {
     const container = document.getElementById('full-history-list');
     if (!container) return;
 
-    const filter = document.querySelector('.history-filter-btn.active')?.dataset.filter || 'todos';
-    let filtered = [...store.transactions];
+    const availableMonths = this.getAvailableMonths();
+    if (!this.selectedHistoryMonth) {
+      this.selectedHistoryMonth = availableMonths[0];
+    }
 
-    if (filter !== 'todos') {
-      filtered = filtered.filter(t => t.type === filter);
+    // Populate month select dropdown
+    const monthSelect = document.getElementById('history-month-select');
+    if (monthSelect) {
+      const options = [
+        `<option value="todos" ${this.selectedHistoryMonth === 'todos' ? 'selected' : ''}>Todos los meses</option>`,
+        ...availableMonths.map(m => `
+          <option value="${m}" ${this.selectedHistoryMonth === m ? 'selected' : ''}>${this.formatMonthLabel(m)}</option>
+        `)
+      ];
+      monthSelect.innerHTML = options.join('');
+      monthSelect.value = this.selectedHistoryMonth;
+    }
+
+    // 1. Filter by Month
+    let monthTransactions = [...store.transactions];
+    if (this.selectedHistoryMonth && this.selectedHistoryMonth !== 'todos') {
+      monthTransactions = monthTransactions.filter(t => t.date && t.date.startsWith(this.selectedHistoryMonth));
+    }
+
+    // 2. Calculate summary statistics for this month view
+    let mIncome = 0;
+    let mExpense = 0;
+    monthTransactions.forEach(t => {
+      if (t.type === 'ingreso') mIncome += (t.amount || 0);
+      if (t.type === 'egreso') mExpense += (t.amount || 0);
+    });
+    const mNet = mIncome - mExpense;
+    const sym = store.settings.defaultCurrency === 'USD' ? '$' : 'S/';
+
+    const incEl = document.getElementById('history-sum-income');
+    const expEl = document.getElementById('history-sum-expense');
+    const netEl = document.getElementById('history-sum-net');
+    if (incEl) incEl.textContent = `+ ${sym} ${mIncome.toFixed(2)}`;
+    if (expEl) expEl.textContent = `- ${sym} ${mExpense.toFixed(2)}`;
+    if (netEl) {
+      netEl.textContent = `${mNet >= 0 ? '+' : ''} ${sym} ${mNet.toFixed(2)}`;
+      netEl.style.color = mNet >= 0 ? 'var(--income-green)' : 'var(--expense-red)';
+    }
+
+    // 3. Filter by Type (todos, egreso, ingreso, transferencia)
+    const typeFilter = document.querySelector('.history-filter-btn.active')?.dataset.filter || 'todos';
+    let filtered = monthTransactions;
+    if (typeFilter !== 'todos') {
+      filtered = filtered.filter(t => t.type === typeFilter);
     }
 
     if (filtered.length === 0) {
+      const monthLabel = this.formatMonthLabel(this.selectedHistoryMonth);
       container.innerHTML = `
         <div class="empty-state">
-          <p>No hay transacciones registradas en este filtro.</p>
+          <p>No hay movimientos registrados en ${monthLabel}.</p>
         </div>
       `;
       return;
@@ -996,6 +1127,41 @@ export class UIController {
         btn.classList.add('active');
         this.renderHistoryTab();
       });
+    });
+
+    // History Month Navigation & Select Handlers
+    document.getElementById('history-month-select')?.addEventListener('change', (e) => {
+      this.selectedHistoryMonth = e.target.value;
+      this.renderHistoryTab();
+    });
+
+    document.getElementById('history-prev-month-btn')?.addEventListener('click', () => {
+      this.navigateHistoryMonth(-1);
+    });
+
+    document.getElementById('history-next-month-btn')?.addEventListener('click', () => {
+      this.navigateHistoryMonth(1);
+    });
+
+    document.getElementById('export-history-csv-btn')?.addEventListener('click', () => {
+      this.exportHistoryToCSV();
+    });
+
+    // Navigation Shortcuts (Historial & Cuentas buttons)
+    document.getElementById('go-to-history-btn')?.addEventListener('click', () => {
+      this.switchTab('history');
+    });
+
+    document.getElementById('back-to-home-from-history')?.addEventListener('click', () => {
+      this.switchTab('home');
+    });
+
+    document.getElementById('home-manage-accounts-btn')?.addEventListener('click', () => {
+      this.switchTab('accounts');
+    });
+
+    document.getElementById('back-to-home-from-accounts')?.addEventListener('click', () => {
+      this.switchTab('home');
     });
 
     // Debt filter buttons
