@@ -11,7 +11,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/((?!assets/.*|icons/.*|manifest\\.json|sw\\.js).*)",
+      "source": "/((?!assets/.+|icons/.*|manifest\\.json|sw\\.js).*)",
       "destination": "/index.html"
     }
   ],
